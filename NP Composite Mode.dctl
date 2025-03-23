@@ -1,0 +1,90 @@
+//optimisation parameter to calculate average color. Less for accurate result
+DEFINE_UI_PARAMS(step, Step, DCTLUI_SLIDER_INT, 50, 20, 100, 1)
+
+//standard Gain and Offset. For experiments
+DEFINE_UI_PARAMS(gain, Gain, DCTLUI_SLIDER_FLOAT, 1.f, 0.f, 2.f, 0.1f)
+DEFINE_UI_PARAMS(offset, Offset, DCTLUI_SLIDER_FLOAT, 0.f, -1.f, 1.f, 0.1f)
+
+DEFINE_UI_PARAMS(average, Average Color, DCTLUI_CHECK_BOX, 1)
+DEFINE_UI_PARAMS(composite_mode, Composite Mode, DCTLUI_CHECK_BOX, 1)
+
+DEFINE_UI_PARAMS(copyright, DCTL by, DCTLUI_COMBO_BOX, 0, { name, vimeo, version }, { Nikita Petrovich, vimeo.com/petrovichnik, v0.1.0 })
+
+
+
+__DEVICE__ float ConvertRGBToLum(float R, float G, float B)
+{
+    return (0.2126f * R + 0.7152f * G + 0.0722f * B); //rec 709
+}
+
+
+
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, __TEXTURE__ p_TexR, __TEXTURE__ p_TexG, __TEXTURE__ p_TexB)
+{
+    
+    int X = 0;
+    int Y = 0;
+
+    float R = _tex2D (p_TexR, p_X, p_Y);
+    float G = _tex2D (p_TexG, p_X, p_Y);
+    float B = _tex2D (p_TexB, p_X, p_Y);
+
+    float R_source = _tex2D (p_TexR, p_X, p_Y);
+    float G_source = _tex2D (p_TexG, p_X, p_Y);
+    float B_source = _tex2D (p_TexB, p_X, p_Y);
+
+    float Lum = ConvertRGBToLum (R, G, B);
+
+    if (average == 1) {
+
+        float count = 0;
+        
+        R = 0.f;
+        G = 0.f;
+        B = 0.f;
+
+        while (Y <= p_Height) {
+
+            R += _tex2D (p_TexR, X, Y);
+            G += _tex2D (p_TexG, X, Y);
+            B += _tex2D (p_TexB, X, Y);
+
+            X += step;
+
+            if (X > p_Width) {
+                X = 0;
+                Y += step;
+            }
+
+            ++count;
+
+        }
+
+        R /= count;
+        G /= count;
+        B /= count;
+
+    }
+
+    R *= gain;
+    G *= gain;
+    B *= gain;
+
+    R += offset;
+    G += offset;
+    B += offset;
+
+// Composite mode here :)
+    if (composite_mode == 1) { 
+    
+        float R_difference = Lum - R;
+        float G_difference = Lum - G;
+        float B_difference = Lum - B;
+
+        R = R_source + R_difference;
+        G = G_source + G_difference;
+        B = B_source + B_difference;
+    }
+
+    return make_float3 (R, G, B);
+}

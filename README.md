@@ -1,2 +1,15 @@
-# nikita-blend-mode
-Original composite mode to blend 2 images.
+# I Invented a Brand New Blending Mode ([video](https://youtu.be/gM-Ja1gioj4?si=76GnDCkQ0mI1tT-4 "video"))
+The blend mode takes values of the base layer, adds the luminosity value of the base layer to it, and subtracts values of the top layer. As described in the video, while trying to recreate standard "Luminosity" blend mode, I skipped RGB-to-HSL conversion. Surprisingly, this "error" created a unique effect.
+
+$𝑓(a, b) = a + Lum_a - b$,
+
+where:
+- **$`a`$** is the base layer value;
+- **$`Lum_a`$** is the base layer luminance value;
+- **$`b`$** is the top layer value.
+> [!NOTE]
+> To calculate luminance, I used the next formula $`0.2126*R + 0.7152*G + 0.0722*B`$
+
+Its most effective use case involves pairing a base image layer with a uniformly filled top layer representing the base image's average color value. This configuration produces a distinctive visual effect reminiscent of the high-contrast, desaturated aesthetic characteristic of bleach bypass processing.
+
+The blend mode is currently only available in my DCTLs for DaVinci Resolve Studio, making it tricky to test with complex layer combinations. It's a hidden gem for color nerds willing to experiment, I hope.

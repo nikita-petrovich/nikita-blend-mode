@@ -1,5 +1,5 @@
 # I Invented a Brand New Blending Mode ([video](https://youtu.be/gM-Ja1gioj4?si=76GnDCkQ0mI1tT-4 "I Invented a Brand New Blending Mode. Try it yourself!"))
-The blend mode takes values of the base layer, adds the luminosity value of the base layer to it, and subtracts values of the top layer. As described in the video, while trying to recreate standard "Luminosity" blend mode, I skipped RGB-to-HSL conversion. Surprisingly, this "error" created a unique effect.
+The blend mode takes values of the base layer, adds the luminosity value of the base layer to it, and subtracts values of the top layer. As described in the video, while trying to recreate standard "Luminosity" blend mode without RGB-to-HSL conversion, I made a mistake. Surprisingly, this "error" created a unique effect.
 
 # $𝑓(a, b) = a + Lum_a - b$
 where:

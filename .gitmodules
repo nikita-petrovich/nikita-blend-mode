@@ -1,0 +1,3 @@
+[submodule "OFX-plugin/openfx"]
+	path = OFX-plugin/openfx
+	url = https://github.com/AcademySoftwareFoundation/openfx.git

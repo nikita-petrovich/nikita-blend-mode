@@ -11,7 +11,33 @@ where:
 
 Its most effective use case involves pairing a base image layer with a uniformly filled top layer representing the base image's average color value. This configuration produces a distinctive visual effect reminiscent of the high-contrast, desaturated aesthetic characteristic of bleach bypass processing (see examples below).
 
-The blend mode is currently only available in my DCTLs for DaVinci Resolve Studio ([FX Trippy DCTL](https://aescripts.com/fx-trippy-dctl/ "FX Trippy DCTL on the aescripts") and [FX Grainny DCTL](https://aescripts.com/fx-grainny-dctl/ "FX Grainny DCTL on the aescripts")), making it tricky to test with complex layer combinations. It's a hidden gem for color nerds willing to experiment, I hope.
+The blend mode is currently only available in my DCTLs for DaVinci Resolve Studio ([FX Trippy DCTL](https://aescripts.com/fx-trippy-dctl/ "FX Trippy DCTL on the aescripts") and [FX Grainny DCTL](https://aescripts.com/fx-grainny-dctl/ "FX Grainny DCTL on the aescripts")) **and** OpenFX plugin, which source code is available [here](OFX-plugin), and is available to download at releases section to the right. It's a hidden gem for color nerds willing to experiment, I hope.
+
+### Support this and future projects:
+- BTC: 
+```
+bc1q44j8e4nws4mjfzgnmajgewcek6ss5q28glfsn2
+```
+- ETH/USDT/USDC (ERC20): 
+```
+0x740D1d2fc9DD4E34A3deef142AB53331DC73EAe2
+```
+- USDT/USDC (TRC20): 
+```
+TKRYcJsG1Y1yg2zFAarxnW8u81RzMTTcAj
+```
+
+## For the End User
+**How to download?**  
+Find 'Releases' section on the page and there you'll be able to download the plugin.
+
+**How to install?**  
+Open archive and copy .bundle file to the following folder:
+- Windows version is possible, if I'll see people's interest. ~~Windows: C:\Program Files\Common Files\OFX\Plugins~~
+- MacOS: /Library/OFX/Plugins  
+> [!NOTE]  
+> If it is your first OpenFX plugin and you don't have 'OFX/Plugins' folder, create the folder yourself.
+
 
 ## Examples
 ![Example 1](Examples/Example1.png)

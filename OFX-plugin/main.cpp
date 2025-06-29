@@ -94,10 +94,12 @@ void Processor::multiThreadProcessImages(OfxRectI p_ProcWindow) {
         float srcPixLum = calcLuminance(srcPix);
 
         for (int c = 0; c < 3; ++c) {
-          dstPix[c] = (srcPix[c] + srcPixLum -
-                       (m_useAvgColor ? m_avgColor[c] : topLayerPix[c])) *
-                          m_blend +
-                      srcPix[c] * (1.f - m_blend);
+          dstPix[c] =
+              (srcPix[c] + topLayerPix[3] *
+                               (srcPixLum - (m_useAvgColor ? m_avgColor[c]
+                                                           : topLayerPix[c]))) *
+                  m_blend +
+              srcPix[c] * (1.f - m_blend);
         }
         dstPix[3] = srcPix[3];
       } else {
@@ -201,13 +203,15 @@ void NikitaBlendPlugin::render(const OFX::RenderArguments &p_Args) {
         (getContext() == OFX::eContextGeneral && m_topClip->isConnected())
             ? m_topClip->fetchImage(currTime)
             : m_srcClip->fetchImage(currTime)};
-    const OFX::BitDepthEnum topLayerBitDepth{topLayer->getPixelDepth()};
-    const OFX::PixelComponentEnum topLayerComponents{
-        topLayer->getPixelComponents()};
+    if (topLayer) {
+      const OFX::BitDepthEnum topLayerBitDepth{topLayer->getPixelDepth()};
+      const OFX::PixelComponentEnum topLayerComponents{
+          topLayer->getPixelComponents()};
 
-    if ((topLayerBitDepth != dstBitDepth) ||
-        (topLayerComponents != dstComponents)) {
-      OFX::throwSuiteStatusException(kOfxStatErrValue);
+      if ((topLayerBitDepth != dstBitDepth) ||
+          (topLayerComponents != dstComponents)) {
+        OFX::throwSuiteStatusException(kOfxStatErrValue);
+      }
     }
 
     // Get Src Image
@@ -244,7 +248,13 @@ void NikitaBlendPlugin::render(const OFX::RenderArguments &p_Args) {
 bool NikitaBlendPlugin::isIdentity(const OFX::IsIdentityArguments &args,
                                    OFX::Clip *&identityClip,
                                    double &identityTime) {
-  if (m_blend->getValueAtTime(args.time) == 0.) {
+  // To check if there is a data in out top layer. If clip is disabled by host,
+  // no data and host will crash after an attempt to use topLayer's members
+  std::unique_ptr<OFX::Image> topLayer{m_topClip->fetchImage(args.time)};
+
+  if (m_blend->getValueAtTime(args.time) == 0. ||
+      (getContext() == OFX::eContextGeneral && m_topClip->isConnected() &&
+       !topLayer)) {
     identityClip = m_srcClip;
     identityTime = args.time;
     return true;

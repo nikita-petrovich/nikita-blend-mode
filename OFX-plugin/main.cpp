@@ -28,6 +28,7 @@ SOFTWARE.
 #include <ofxsCore.h>
 #include <ofxsParam.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 
@@ -53,7 +54,7 @@ public:
 
   void setSrcImg(OFX::Image *p_srcFrame);
   void setTopLayer(OFX::Image *p_topLayer);
-  void setParams(bool p_useAvgColor, float p_blend);
+  void setParams(bool p_useAvgColor, float p_blend, bool p_clamp);
   float calcLuminance(const float *srcPix);
   void calcAvgColor();
 
@@ -63,6 +64,7 @@ private:
 
   std::vector<float> m_avgColor{0.f, 0.f, 0.f};
   bool m_useAvgColor;
+  bool m_clamp;
   float m_blend;
 };
 
@@ -94,12 +96,18 @@ void Processor::multiThreadProcessImages(OfxRectI p_ProcWindow) {
         float srcPixLum = calcLuminance(srcPix);
 
         for (int c = 0; c < 3; ++c) {
+          // my original composite mode. Implementation for the plugin and
+          // 4-component image
           dstPix[c] =
-              (srcPix[c] + topLayerPix[3] *
-                               (srcPixLum - (m_useAvgColor ? m_avgColor[c]
-                                                           : topLayerPix[c]))) *
-                  m_blend +
-              srcPix[c] * (1.f - m_blend);
+              srcPix[c] +
+              topLayerPix[3] * (srcPixLum - (m_useAvgColor ? m_avgColor[c]
+                                                           : topLayerPix[c]));
+          // blending the result with a source image
+          dstPix[c] = dstPix[c] * m_blend + srcPix[c] * (1.f - m_blend);
+
+          if (m_clamp) {
+            dstPix[c] = std::clamp(dstPix[c], 0.f, 1.f);
+          }
         }
         dstPix[3] = srcPix[3];
       } else {
@@ -116,9 +124,10 @@ void Processor::multiThreadProcessImages(OfxRectI p_ProcWindow) {
 void Processor::setSrcImg(OFX::Image *p_srcFrame) { m_srcFrame = p_srcFrame; }
 void Processor::setTopLayer(OFX::Image *p_topLayer) { m_topLayer = p_topLayer; }
 
-void Processor::setParams(bool p_useAvgColor, float p_blend) {
+void Processor::setParams(bool p_useAvgColor, float p_blend, bool p_clamp) {
   m_useAvgColor = p_useAvgColor;
   m_blend = p_blend;
+  m_clamp = p_clamp;
 }
 
 float Processor::calcLuminance(const float *srcPix) {
@@ -170,6 +179,7 @@ private:
 
   OFX::BooleanParam *m_swapLayers;
   OFX::BooleanParam *m_useAvgColor;
+  OFX::BooleanParam *m_clamp;
   OFX::DoubleParam *m_blend;
 };
 
@@ -182,6 +192,7 @@ NikitaBlendPlugin::NikitaBlendPlugin(OfxImageEffectHandle p_Handle)
 
   m_swapLayers = fetchBooleanParam("swapLayers");
   m_useAvgColor = fetchBooleanParam("useAvgColor");
+  m_clamp = fetchBooleanParam("clamp");
   m_blend = fetchDoubleParam("blend");
 }
 
@@ -232,7 +243,8 @@ void NikitaBlendPlugin::render(const OFX::RenderArguments &p_Args) {
     nikitaBlend.setTopLayer(topLayer.get());
 
     nikitaBlend.setParams(m_useAvgColor->getValueAtTime(currTime),
-                          m_blend->getValueAtTime(currTime));
+                          m_blend->getValueAtTime(currTime),
+                          m_clamp->getValueAtTime((currTime)));
 
     nikitaBlend.setRenderWindow(p_Args.renderWindow);
 
@@ -248,7 +260,7 @@ void NikitaBlendPlugin::render(const OFX::RenderArguments &p_Args) {
 bool NikitaBlendPlugin::isIdentity(const OFX::IsIdentityArguments &args,
                                    OFX::Clip *&identityClip,
                                    double &identityTime) {
-  // To check if there is a data in out top layer. If clip is disabled by host,
+  // To check if there is a data in our top layer. If clip is disabled by host,
   // no data and host will crash after an attempt to use topLayer's members
   std::unique_ptr<OFX::Image> topLayer{m_topClip->fetchImage(args.time)};
 
@@ -338,6 +350,13 @@ void NikitaBlendPluginFactory::describeInContext(
       param->setLabel("Swap Layers");
       param->setHint("Swap Layers");
       param->setDefault(false);
+      page->addChild(*param);
+    }
+    {
+      OFX::BooleanParamDescriptor *param{p_Desc.defineBooleanParam("clamp")};
+      param->setLabel("Clamp");
+      param->setHint("Clamp RGB values to be between 0.0 and 1.0 included");
+      param->setDefault(true);
       page->addChild(*param);
     }
     {

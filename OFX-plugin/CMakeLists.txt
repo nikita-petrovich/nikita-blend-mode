@@ -29,9 +29,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -DDEBUG")
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/OpenFX/include/openfx)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/OpenFX/include/openfx/Support)
-
 # Open FX Library
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/openfx/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/openfx/Support/include)

@@ -34,7 +34,9 @@ SOFTWARE.
 
 #define kPluginName "Nikita Blend"
 #define kPluginGrouping "NP FX"
-#define kPluginDescription "Original composite mode to blend 2 images"
+#define kPluginDescription                                                     \
+  "Original composite mode to blend 2 images. Learn more: "                    \
+  "https://github.com/nikita-petrovich/nikita-blend-mode"
 #define kPluginIdentifier "ofx.NP.BlendMode"
 #define kPluginVersionMajor 1
 #define kPluginVersionMinor 0
@@ -55,6 +57,7 @@ public:
   void setSrcImg(OFX::Image *p_srcFrame);
   void setTopLayer(OFX::Image *p_topLayer);
   void setParams(bool p_useAvgColor, float p_blend, bool p_clamp);
+
   float calcLuminance(const float *srcPix);
   void calcAvgColor();
 
@@ -170,6 +173,8 @@ public:
   virtual void render(const OFX::RenderArguments &p_Args);
   virtual bool isIdentity(const OFX::IsIdentityArguments &args,
                           OFX::Clip *&identityClip, double &identityTime);
+  virtual void changedClip(const OFX::InstanceChangedArgs &args,
+                           const std::string &clipName);
 
 private:
   // Does not own the following pointers
@@ -274,6 +279,17 @@ bool NikitaBlendPlugin::isIdentity(const OFX::IsIdentityArguments &args,
   return false;
 }
 
+void NikitaBlendPlugin::changedClip(const OFX::InstanceChangedArgs &args,
+                                    const std::string &clipName) {
+  if (clipName == "TopLayer" && m_topClip->isConnected()) {
+    m_swapLayers->setEnabled(true);
+    m_useAvgColor->setEnabled(true);
+  } else {
+    m_swapLayers->setEnabled(false);
+    m_useAvgColor->setEnabled(false);
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // PLUGIN FACTORY
 //////////////////////////////////////////////////////////////////////////////
@@ -335,13 +351,14 @@ void NikitaBlendPluginFactory::describeInContext(
 
   // Page "Controls"
   {
-    OFX::PageParamDescriptor *page{p_Desc.definePageParam("Contorls")};
+    OFX::PageParamDescriptor *page{p_Desc.definePageParam("Controls")};
     {
       OFX::BooleanParamDescriptor *param{
           p_Desc.defineBooleanParam("useAvgColor")};
       param->setLabel("Top Color Average");
       param->setHint("Use average color of the top layer");
-      param->setDefault(false);
+      param->setDefault(true);
+      param->setEnabled(false);
       page->addChild(*param);
     }
     {
@@ -350,6 +367,7 @@ void NikitaBlendPluginFactory::describeInContext(
       param->setLabel("Swap Layers");
       param->setHint("Swap Layers");
       param->setDefault(false);
+      param->setEnabled(false);
       page->addChild(*param);
     }
     {

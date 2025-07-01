@@ -173,8 +173,8 @@ public:
   virtual void render(const OFX::RenderArguments &p_Args);
   virtual bool isIdentity(const OFX::IsIdentityArguments &args,
                           OFX::Clip *&identityClip, double &identityTime);
-  virtual void changedClip(const OFX::InstanceChangedArgs &args,
-                           const std::string &clipName);
+  // virtual void changedClip(const OFX::InstanceChangedArgs &args,
+  //                          const std::string &clipName);
 
 private:
   // Does not own the following pointers
@@ -279,16 +279,22 @@ bool NikitaBlendPlugin::isIdentity(const OFX::IsIdentityArguments &args,
   return false;
 }
 
-void NikitaBlendPlugin::changedClip(const OFX::InstanceChangedArgs &args,
-                                    const std::string &clipName) {
-  if (clipName == "TopLayer" && m_topClip->isConnected()) {
-    m_swapLayers->setEnabled(true);
-    m_useAvgColor->setEnabled(true);
-  } else {
-    m_swapLayers->setEnabled(false);
-    m_useAvgColor->setEnabled(false);
-  }
-}
+// Not working on the DaVinci Color page as needed.
+//
+// void NikitaBlendPlugin::changedClip(const OFX::InstanceChangedArgs &args,
+//                                     const std::string &clipName) {
+//   if (m_topClip->isConnected()) {
+//     m_swapLayers->setEnabled(true);
+
+//     m_useAvgColor->setEnabled(true);
+//     m_useAvgColor->setValue(false);
+//   } else {
+//     m_swapLayers->setEnabled(false);
+
+//     m_useAvgColor->setEnabled(false);
+//     m_useAvgColor->setValue(true);
+//   }
+// }
 
 //////////////////////////////////////////////////////////////////////////////
 // PLUGIN FACTORY
@@ -358,7 +364,7 @@ void NikitaBlendPluginFactory::describeInContext(
       param->setLabel("Top Color Average");
       param->setHint("Use average color of the top layer");
       param->setDefault(true);
-      param->setEnabled(false);
+      //  param->setEnabled(false);
       page->addChild(*param);
     }
     {
@@ -367,14 +373,14 @@ void NikitaBlendPluginFactory::describeInContext(
       param->setLabel("Swap Layers");
       param->setHint("Swap Layers");
       param->setDefault(false);
-      param->setEnabled(false);
+      // param->setEnabled(false);
       page->addChild(*param);
     }
     {
       OFX::BooleanParamDescriptor *param{p_Desc.defineBooleanParam("clamp")};
       param->setLabel("Clamp");
       param->setHint("Clamp RGB values to be between 0.0 and 1.0 included");
-      param->setDefault(true);
+      param->setDefault(false);
       page->addChild(*param);
     }
     {

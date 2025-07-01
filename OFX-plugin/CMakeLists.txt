@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.10.0...4.0.3)
-project(NP_BlendMode VERSION 0.1.0 LANGUAGES C CXX)
+project(NP-BlendMode VERSION 0.1.0 LANGUAGES C CXX)
 
 # ========================== build platform ==========================
 
 MESSAGE (STATUS "  Platform:")
 MESSAGE (STATUS "    Host: "             ${CMAKE_HOST_SYSTEM_NAME} " " ${CMAKE_HOST_SYSTEM_VERSION} " " ${CMAKE_HOST_SYSTEM_PROCESSOR})
+MESSAGE (STATUS "    Compiler: "         ${CMAKE_CXX_COMPILER_ID} " " ${CMAKE_CXX_COMPILER_VERSION})
 if(CMAKE_CROSSCOMPILING)
   MESSAGE (STATUS "    Target: "         ${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_VERSION} ${CMAKE_SYSTEM_PROCESSOR})
 endif()

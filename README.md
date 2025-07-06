@@ -54,6 +54,12 @@ Find 'Releases' section on the page and there you'll be able to download the plu
 Open archive and copy .bundle file to the following folder:
 - Windows version is possible, if I'll see people's interest. ~~Windows: C:\Program Files\Common Files\OFX\Plugins~~
 - MacOS: /Library/OFX/Plugins  
+> [!NOTE]
+> After adding .bundle file to the Plugins folder, open Terminal app, paste the next line, and press Enter on your keyboard:
+> ```
+> xattr -c /Library/OFX/Plugins/NP-BlendMode.ofx.bundle
+> ```
+
 > [!NOTE]  
 > If it is your first OpenFX plugin and you don't have 'OFX/Plugins' folder, create the folder yourself.
 

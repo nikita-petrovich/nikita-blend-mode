@@ -1,4 +1,23 @@
-# I Invented a Brand New Blending Mode ([video](https://youtu.be/gM-Ja1gioj4?si=76GnDCkQ0mI1tT-4 "I Invented a Brand New Blending Mode. Try it yourself!"))
+# OpenFX Plugin 
+### [👉 Bleach Bypass Use Case Video](https://youtube.com)  
+**Parameters:**
+- Top Color Average - use average color of the top layer
+- Swap Layers - swap inputs of the plugin logically
+- Clamp - clamp RGB values to be between 0.0 and 1.0 included
+- Blend - blend result with a bottom layer  
+
+**Note:**  
+If nothing is connected to the plugin and the 'Top Color Average' checkbox is enabled, it calculates the average color from the first input; if connected, the average color from the second input
+
+### To Do:
+- [ ] Windows version
+- [ ] GPU Acceleration (Subtask: learn how to do it, GPU programming for different vendors is a mess)
+
+***  
+***
+
+# I Invented a Brand New Blending Mode 
+### [👉 Learn More in The Video](https://youtu.be/gM-Ja1gioj4?si=76GnDCkQ0mI1tT-4 "I Invented a Brand New Blending Mode. Try it yourself!")
 The blend mode takes values of the base layer, adds the luminosity value of the base layer to it, and subtracts values of the top layer. As described in the video, while trying to recreate standard "Luminosity" blend mode without RGB-to-HSL conversion, I made a mistake. Surprisingly, this "error" created a unique effect.
 
 # $𝑓(a, b) = a + Lum_a - b$

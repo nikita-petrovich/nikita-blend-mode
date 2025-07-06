@@ -1,5 +1,5 @@
 # OpenFX Plugin 
-### [👉 Bleach Bypass Use Case Video](https://youtube.com)  
+### [👉 Bleach Bypass Use Case Video](https://www.youtube.com/watch?v=4Agm1IOfseY)  
 **Parameters:**
 - Top Color Average - use average color of the top layer
 - Swap Layers - swap inputs of the plugin logically

@@ -57,7 +57,7 @@ Open archive and copy .bundle file to the following folder:
 > [!IMPORTANT]
 > After adding .bundle file to the Plugins folder, open Terminal app, paste the next line, and press Enter on your keyboard:
 > ```
-> xattr -c /Library/OFX/Plugins/NP-BlendMode.ofx.bundle
+> xattr -cr /Library/OFX/Plugins/NP-BlendMode.ofx.bundle
 > ```
 
 > [!NOTE]  
